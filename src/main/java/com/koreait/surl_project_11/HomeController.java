@@ -1,9 +1,15 @@
 package com.koreait.surl_project_11;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class HomeController {
@@ -62,38 +68,12 @@ public class HomeController {
         return married ? "기혼" : "미혼";
     }
 
+    @Data
+    @ToString
+    @AllArgsConstructor
     public static class Person {
         private String name;
         private int age;
-
-        public Person(String name, int age) {
-            this.name = name;
-            this.age = age;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public int getAge() {
-            return age;
-        }
-
-        public void setAge(int age) {
-            this.age = age;
-        }
-
-        @Override
-        public String toString() {
-            return "Person{" +
-                    "name='" + name + '\'' +
-                    ", age=" + age +
-                    '}';
-        }
     }
 
     @GetMapping("person1")
@@ -122,4 +102,111 @@ public class HomeController {
         return age;
     }
 
+    @GetMapping("f")
+    @ResponseBody
+    public ArrayList f() {
+        ArrayList<int[]> arr = new ArrayList<>();
+        arr.add(new int[]{1, 2, 3});
+        arr.add(new int[]{2});
+        arr.add(new int[]{3});
+        return arr;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @Builder
+    @ToString
+    @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+    public static class Post {
+        @ToString.Exclude
+        @JsonIgnore
+        @EqualsAndHashCode.Include
+        private Long id;
+        private LocalDateTime createDate;
+        private LocalDateTime updateDate;
+        @Builder.Default
+        private String subject = "제목이야.";
+        private String body;
+    }
+
+    @GetMapping("/posts")
+    @ResponseBody
+    public List<Post> getPosts() {
+        List<Post> posts = new ArrayList<>() {{
+            add(new Post(1L, LocalDateTime.now(), LocalDateTime.now(), "제목1", "내용1"));
+            add(new Post(2L, LocalDateTime.now(), LocalDateTime.now(), "제목2", "내용2"));
+            add(new Post(3L, LocalDateTime.now(), LocalDateTime.now(), "제목3", "내용3"));
+            add(new Post(4L, LocalDateTime.now(), LocalDateTime.now(), "제목4", "내용4"));
+        }};
+        return posts;
+    }
+
+    @GetMapping("/posts2")
+    @ResponseBody
+    public List<Post> getPosts2() {
+        List<Post> posts = new ArrayList<>() {{
+//            add(new Post(1L, LocalDateTime.now(), LocalDateTime.now(), "제목1", "내용1"));
+            add(Post
+                    .builder()
+                    .id(1L)
+                    .createDate(LocalDateTime.now())
+                    .updateDate(LocalDateTime.now())
+                    .body("내용1")
+                    .build());
+            add(Post
+                    .builder()
+                    .id(2L)
+                    .createDate(LocalDateTime.now())
+                    .updateDate(LocalDateTime.now())
+                    .subject("제목2")
+                    .body("내용2")
+                    .build());
+            add(Post
+                    .builder()
+                    .id(3L)
+                    .createDate(LocalDateTime.now())
+                    .updateDate(LocalDateTime.now())
+                    .subject("제목3")
+                    .body("내용3")
+                    .build());
+            add(Post
+                    .builder()
+                    .id(4L)
+                    .createDate(LocalDateTime.now())
+                    .updateDate(LocalDateTime.now())
+                    .subject("제목4")
+                    .body("내용4")
+                    .build());
+        }};
+        return posts;
+    }
+
+    @GetMapping("/posts/1")
+    @ResponseBody
+    public Post getPost() {
+        Post post = Post.builder()
+                .id(1L)
+                .createDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
+                .body("내용1")
+                .build();
+        System.out.println(post);
+        return post;
+    }
+
+    @SneakyThrows
+    @GetMapping("/posts/2")
+    @ResponseBody
+    public Post getPost2() {
+        Post post = Post.builder()
+                .id(1L)
+                .createDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
+                .body("내용1")
+                .build();
+        Thread.sleep(2000);
+        System.out.println(post);
+        return post;
+    }
 }
